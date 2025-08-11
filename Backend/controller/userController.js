@@ -39,7 +39,7 @@ if (password.length < 6) {
         httpOnly : true,
         secure: process.env.SECURE !== "development",
         maxAge : 24 * 60 * 60 * 1000,
-        sameSite : "Strict"
+        sameSite: process.env.SECURE === "development" ? "Lax" : "None"
     }).json({message : "Registered Successfully" , user ,token})
 
  } catch (error) {
@@ -78,7 +78,7 @@ const userLogin = async (req, res)=>{
         httpOnly : true,
         secure: process.env.SECURE !== "development",
         maxAge : 24 * 60 * 60 * 1000, //? 1d
-        sameSite : "Strict"
+       sameSite: process.env.SECURE === "development" ? "Lax" : "None",
     }).json({message : "Login Successfully", user, token})
 
     } catch (error) {
