@@ -15,7 +15,7 @@ const getAllPosts = async()=>{
     setLoading(true)
     const res = await API.get("/post/all-post")
  const data =  res.data
- console.log(data.posts)
+ 
  setPosts(data.posts || [])
  setLoading(false)
  } catch (error) {
