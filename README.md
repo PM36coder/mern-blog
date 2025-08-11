@@ -43,12 +43,8 @@ A full-stack **MERN** (MongoDB, Express, React, Node.js) blog application where 
 git clone https://github.com/PM36coder/mern-blog
 cd mern-blog
 
-Backend (.env)
-
-env
-Copy
-Edit
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 SECURE=development  # change to production when deployed
+
