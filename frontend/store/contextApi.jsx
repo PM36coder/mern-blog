@@ -14,39 +14,34 @@ export const AuthProvider = ({ children }) => {
   //logout 
 
 const logout = async () => {
-    try {
-      console.log("🚪 Logging out user...");
+  try {
+    console.log("🚪 Logging out user...");
 
-      // Call backend logout API
-      const response = await API.post("/user/logout", {
-        
-        credentials: "include", // Send cookies
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        console.log("✅ Backend logout successful");
-      } else {
-        console.warn("⚠️ Backend logout failed, but continuing with frontend logout");
+    const response = await API.post(
+      "/user/logout",
+      {}, // body empty (agar zarurat nahi)
+      {
+        withCredentials: true, // Send cookies to backend
+        headers: { "Content-Type": "application/json" },
       }
-    } catch (error) {
-      console.error("💥 Logout API error:", error);
-      // Continue with frontend logout even if API fails
-    } finally {
-      // Clear state
-      setUser(null);
-      setToken(null);
-      
-      // Clear localStorage
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      
-      console.log("✅ User logged out successfully");
-      
-      
-    }}
+    );
+
+    if (response.status === 200) {
+      console.log("✅ Backend logout successful");
+    } else {
+      console.warn("⚠️ Backend logout failed, but continuing with frontend logout");
+    }
+  } catch (error) {
+    console.error("💥 Logout API error:", error);
+  } finally {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    console.log("✅ User logged out successfully");
+  }
+};
+
 
 
   return (
