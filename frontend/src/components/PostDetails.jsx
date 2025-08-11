@@ -20,7 +20,7 @@ const PostDetail = () => {
       setLoading(true);
       setError("");
       
-      console.log("🔍 Fetching post with ID:", id);
+      
       
       const res = await API.get(`/post/${id}`);
       const data = res.data;

@@ -65,7 +65,7 @@ const Login = () => {
         withCredentials : true,
         credentials : "include" //for httpOnly cookies
       })
-      console.log('Login data:', formData)
+      
       const data = res.data
       localStorage.setItem("token", data.token)
       localStorage.setItem("user", JSON.stringify(data.user))
