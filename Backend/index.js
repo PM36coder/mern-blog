@@ -18,13 +18,18 @@ const PORT = process.env.PORT || 3000
 const app = express()
 app.use(cookieParser())
 app.use(express.json())
+
 app.use(cors({
-      origin: [
-    "http://localhost:5173",
-    "https://blogwithmee.netlify.app"
-  ],// Frontend URL
+    origin: [
+        "http://localhost:5173",
+        "https://blogwithmee.netlify.app"
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Add this
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'], // Add this
     credentials: true
 }))
+
+
 app.get('/', (req,res)=>{
     res.json({message: "server is running"})
 })
