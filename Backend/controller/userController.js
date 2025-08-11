@@ -43,6 +43,7 @@ if (password.length < 6) {
     }).json({message : "Registered Successfully" , user ,token})
 
  } catch (error) {
+     console.error("Register error:", error);
     res.status(500).json({message : "Server Side Error" , error})
  }
 }
