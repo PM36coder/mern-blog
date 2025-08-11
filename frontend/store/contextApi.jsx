@@ -18,7 +18,7 @@ const logout = async () => {
       console.log("🚪 Logging out user...");
 
       // Call backend logout API
-      const response = await API.post("/api/user/logout", {
+      const response = await API.post("/user/logout", {
         
         credentials: "include", // Send cookies
         headers: {
