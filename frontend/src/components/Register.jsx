@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { Link ,useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Mail, Lock, User, UserCheck } from 'lucide-react'
-import {API} from "../utils/Axios.jsx"
+import { Link, useNavigate } from 'react-router-dom'
+import { Eye, EyeOff, Mail, Lock, User, UserCheck, Phone } from 'lucide-react'
+import { API } from "../utils/Axios.jsx"
 import { useAuth } from '../../store/contextApi'
 
 const Register = () => {
@@ -9,6 +9,7 @@ const Register = () => {
     name: '',
     username: '',
     email: '',
+    phone: '', // 🔥 NEW: Phone field added
     password: '',
     confirmPassword: '',
     bio: ''
@@ -20,7 +21,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
-  const {setUser, setToken} = useAuth()
+  const { setUser, setToken } = useAuth()
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -29,7 +30,6 @@ const Register = () => {
       [name]: value
     }))
     
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -59,6 +59,11 @@ const Register = () => {
       newErrors.email = 'Please enter a valid email address'
     }
     
+    // 🔥 NEW: Phone number validation
+    if (formData.phone && !/^\d{10}$/.test(formData.phone)) {
+        newErrors.phone = 'Phone number must be a 10-digit number'
+    }
+    
     if (!formData.password) {
       newErrors.password = 'Password is required'
     } else if (formData.password.length < 6) {
@@ -85,26 +90,26 @@ const Register = () => {
     
     try {
       // Prepare data for backend (excluding confirmPassword)
-    const res = await API.post("/user/register", formData, {
-        headers :{
-            "Content-Type" : "application/json",
+      const res = await API.post("/user/register", formData, {
+        headers: {
+            "Content-Type": "application/json",
         },
-        withCredentials : true,
-        credentials : "include"
-    })
+        withCredentials: true,
+        credentials: "include"
+      })
       
-     const data = res.data
-     localStorage.setItem("token", data.token)
+      const data = res.data
+      localStorage.setItem("token", data.token)
       localStorage.setItem("user", JSON.stringify(data.user))
     
       setUser(data.user)
       setToken(data.token)
       
-      // Handle success
       alert('Registration successful!')
       navigate('/')
     } catch (error) {
       console.error('Registration error:', error)
+      alert(error.response?.data?.message || 'Registration failed.')
     } finally {
       setLoading(false)
     }
@@ -184,7 +189,7 @@ const Register = () => {
                   Only letters, numbers, and underscores allowed
                 </p>
               </div>
-
+              
               {/* Email Field */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -207,6 +212,31 @@ const Register = () => {
                 </div>
                 {errors.email && (
                   <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                )}
+              </div>
+
+              {/* 🔥 NEW: Phone Number Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Phone Number
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Phone className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
+                      errors.phone ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter your 10-digit phone number"
+                  />
+                </div>
+                {errors.phone && (
+                  <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
                 )}
               </div>
 
