@@ -19,7 +19,10 @@ const app = express()
 app.use(cookieParser())
 app.use(express.json())
 app.use(cors({
-     origin: ['http://localhost:5173','https://blogwithmee.netlify.app/'], // Frontend URL
+      origin: [
+    "http://localhost:5173",
+    "https://blogwithmee.netlify.app"
+  ],// Frontend URL
     credentials: true
 }))
 app.get('/', (req,res)=>{
