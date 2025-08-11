@@ -1,0 +1,2 @@
+mkdir -p public
+printf '/* /index.html 200\n' > public/_redirects
