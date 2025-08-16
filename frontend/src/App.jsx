@@ -10,6 +10,8 @@ import DashBoard from "./components/DashBoard"
 import Error from "./layout/Error"
 import CreatePost from "./components/CreatePost"
 import EditPost from "./components/Editpost"
+import ForgotPassword from "./components/ForgotPassword"
+import ResetPassword from "./components/ResetPassword"
 // import CommentSection from "./components/CommentSection"
 
 
@@ -29,7 +31,9 @@ function App() {
         {path: "/dashboard", element: <DashBoard/>},
         {path: "/post/:id", element: <PostDetails/>},
         {path: "/create-post", element : <CreatePost/>},
-        {path:"/dashboard/edit/:id", element : <EditPost/>}
+        {path:"/dashboard/edit/:id", element : <EditPost/>},
+        {path:"forgot-password", element : <ForgotPassword/>},
+        {path:"/reset-password/:token", element : <ResetPassword/>}
       ]
     }
   ]);

@@ -9,6 +9,11 @@ const userSchema = new Schema({
     password: { type: String, required: true },
     profile: { type: String, default: "" },
     bio: { type: String, default: "", trim: true },
+
+
+     //! ➕ forgot/reset fields
+  resetPasswordToken: { type: String },
+  resetPasswordExpire: { type: Date },
 }, { timestamps: true }
 )
 
@@ -22,5 +27,19 @@ userSchema.pre("save", async function(next) {
         next(error)
     }
 })
+
+// ➕ generate reset token (store hashed in DB)
+userSchema.methods.getResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(20).toString("hex");
+
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // 10 min expiry
+  this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+  return resetToken;
+};
 
 export const User = model('User', userSchema)

@@ -1,6 +1,8 @@
 import { User } from "../model/userSchema.js";
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import crypto from "crypto";
+import { sendEmail } from "../utility/sendEmail.js";
 
 //! registration code
 const userRegister = async (req, res) => {
@@ -211,5 +213,101 @@ const getUserProfile = async (req, res) => {
     }
 };
 
-export { userRegister, userLogin, userLogout, updateProfile, getUserProfile }
+
+//! reset forgot password
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email is required" });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // generate & save token
+    const resetToken = user.getResetPasswordToken();
+    await user.save({ validateBeforeSave: false });
+
+    const resetURL = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+    // simple HTML email
+    const html = `
+      <div style="font-family:Arial,sans-serif">
+        <h2>Password Reset Request</h2>
+        <p>We received a request to reset your password.</p>
+        <p>This link will expire in <b>10 minutes</b>.</p>
+        <p>
+          <a href="${resetURL}" style="background:#2563eb;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none">
+            Reset Password
+          </a>
+        </p>
+        <p>Or copy this URL:</p>
+        <p>${resetURL}</p>
+        <br/>
+        <small>If you did not request this, you can safely ignore this email.</small>
+      </div>
+    `;
+
+    await sendEmail({
+      to: user.email,
+      subject: "Reset your password",
+      html,
+    });
+
+    return res.status(200).json({ message: "Reset link sent to email" });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    // cleanup if send failed
+    try {
+      const u = await User.findOne({ email: req.body.email });
+      if (u) {
+        u.resetPasswordToken = undefined;
+        u.resetPasswordExpire = undefined;
+        await u.save({ validateBeforeSave: false });
+      }
+    } catch {}
+    return res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
+// --------- Reset Password -----------
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;         // token comes from URL
+    const { password } = req.body;
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    // hash token & find user
+    const hashed = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      resetPasswordToken: hashed,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired reset link" });
+    }
+
+    // set new password
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    return res.status(200).json({ message: "Password reset successful. Please login." });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
+
+
+
+
+
+export { userRegister, userLogin, userLogout, updateProfile, getUserProfile , resetPassword , forgotPassword }
 
