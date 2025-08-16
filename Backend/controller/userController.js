@@ -1,7 +1,7 @@
 import { User } from "../model/userSchema.js";
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import crypto from "crypto";
+import crypto from "node:crypto"
 import { sendEmail } from "../utility/sendEmail.js";
 
 //! registration code
