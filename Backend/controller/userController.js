@@ -85,9 +85,9 @@ const userLogin = async (req, res) => {
 
         res.status(200).cookie("token", token, {
             httpOnly: true,
-            secure: process.env.SECURE !== "development",
+            secure: process.env.NODE_ENV !== "development",
             maxAge: 24 * 60 * 60 * 1000, //? 1d
-            sameSite: process.env.SECURE === "development" ? "Lax" : "None",
+            sameSite: process.env.NODE_ENV === "development" ? "Lax" : "None",
         }).json({ message: "Login Successfully", user, token })
 
     } catch (error) {
